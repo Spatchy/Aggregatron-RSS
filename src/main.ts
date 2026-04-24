@@ -1,8 +1,8 @@
-export function add(a: number, b: number): number {
-  return a + b;
-}
+import { Repos } from "./modules/github/github.ts";
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
+
 if (import.meta.main) {
-  console.log("Add 2 + 3 =", add(2, 3));
+  const repos = new Repos();
+  const rss = await repos.RSS();
+  console.log(rss);
 }

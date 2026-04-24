@@ -1,8 +1,13 @@
-import XMLBuilder from "fast-xml-builder"
+import XMLBuilder, { XmlBuilderOptions } from "fast-xml-builder"
 import { feedObject, itemObject } from "./_types.ts";
 
 class RSSBuilder {
-  xmlBuilder = new XMLBuilder();
+  options:XmlBuilderOptions = {
+    ignoreAttributes: false,
+    attributeNamePrefix: "$"
+  }
+  
+  xmlBuilder = new XMLBuilder(this.options);
   feed:feedObject; 
 
   constructor(channelTitle:string, channelDescription:string, channelLink:string) {

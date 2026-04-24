@@ -32,7 +32,9 @@ class Repos {
         link: repo.html_url,
         // TODO: Add enclosure with image
       })
-    })
+    });
+
+    return this.rssBuilder.build()
   }
 }
 
