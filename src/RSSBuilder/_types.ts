@@ -1,4 +1,4 @@
-interface itemObject {
+interface ItemObject {
   title: string,
   description: string,
   link: string,
@@ -10,14 +10,14 @@ interface itemObject {
   }
 }
 
-interface feedObject {
+interface FeedObject {
   rss: {
     $version: "0.91" | "1.0" | "2.0"
     title: string,
     description: string,
     link: string
-    item: itemObject[]
+    item: ItemObject[]
   }
 }
 
-export type { itemObject, feedObject }
+export type { ItemObject, FeedObject }

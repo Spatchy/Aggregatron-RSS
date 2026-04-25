@@ -1,14 +1,14 @@
 import XMLBuilder, { XmlBuilderOptions } from "fast-xml-builder"
-import { feedObject, itemObject } from "./_types.ts";
+import { FeedObject, ItemObject } from "./_types.ts";
 
 class RSSBuilder {
   options:XmlBuilderOptions = {
     ignoreAttributes: false,
     attributeNamePrefix: "$"
   }
-  
+
   xmlBuilder = new XMLBuilder(this.options);
-  feed:feedObject; 
+  feed:FeedObject; 
 
   constructor(channelTitle:string, channelDescription:string, channelLink:string) {
     this.feed = {
@@ -22,7 +22,7 @@ class RSSBuilder {
     }
   }
 
-  addItem(item:itemObject){
+  addItem(item:ItemObject){
     this.feed.rss.item.push(item);
   }
 
