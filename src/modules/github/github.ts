@@ -30,6 +30,7 @@ class Repos {
         pubDate: new Date(repo.created_at ?? ""),
         description: repo.description ?? "",
         link: repo.html_url,
+        category: "github/repos"
         // TODO: Add enclosure with image
       })
     });

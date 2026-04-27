@@ -3,6 +3,7 @@ interface ItemObject {
   description: string,
   link: string,
   pubDate: Date,
+  category: string,
   enclosure?: {
     $url: string,
     $length: number,

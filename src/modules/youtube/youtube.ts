@@ -47,6 +47,7 @@ class YoutubeFeed {
         description: this.descTrim(entry["media:group"]["media:description"]),
         link: entry.link.$href,
         pubDate: new Date(entry.published),
+        category: "youtube/videos",
         enclosure: await this.generateThumbnailEnclosure(
           entry["media:group"]["media:thumbnail"].$url,
         ),
