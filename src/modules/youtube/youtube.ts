@@ -2,6 +2,7 @@ import { youtube as envs } from "./.envs.ts";
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import { FeedEntry, YouTubeFeed } from "./_types.ts";
 import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
+import { ItemObject } from "../../RSSBuilder/_types.ts";
 
 class YoutubeFeed {
   options: X2jOptions = {
@@ -16,7 +17,19 @@ class YoutubeFeed {
     return description.trim().split("\n")[0];
   }
 
-  atomToRSS2(atomFeed: string) {
+  async generateThumbnailEnclosure(uri: string): Promise<ItemObject["enclosure"]> {
+    const res = await fetch(uri, {
+      method: "HEAD",
+    });
+
+    return {
+      $url: uri,
+      $length: Number(res.headers.get("Content-Length")),
+      $type: res.headers.get("Content-Type")!
+    }
+  }
+
+  async atomToRSS2(atomFeed: string) {
     const feedObject: YouTubeFeed = this.parser.parse(atomFeed);
 
     // Make sure it's still an array if there is only a single video
@@ -28,14 +41,17 @@ class YoutubeFeed {
       `${feedObject.feed.author.uri}`,
     );
 
-    feedObject.feed.entry.forEach((entry) => {
+    await Promise.all(feedObject.feed.entry.map(async (entry) => {
       rssBuilder.addItem({
         title: entry.title,
         description: this.descTrim(entry["media:group"]["media:description"]),
         link: entry.link.$href,
         pubDate: new Date(entry.published),
+        enclosure: await this.generateThumbnailEnclosure(
+          entry["media:group"]["media:thumbnail"].$url,
+        ),
       });
-    });
+    }));
 
     return rssBuilder.build();
   }
@@ -47,7 +63,7 @@ class YoutubeFeed {
 
     if (res.ok) {
       const atomFeed = await res.text();
-      return this.atomToRSS2(atomFeed);
+      return await this.atomToRSS2(atomFeed);
     }
 
     throw new Error(`Error ${res.status}: ${res.statusText}`);
