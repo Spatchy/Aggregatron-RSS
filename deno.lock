@@ -10,7 +10,6 @@
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@1": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
-    "npm:@octokit/graphql@^9.0.3": "9.0.3",
     "npm:fast-xml-builder@^1.1.5": "1.1.5",
     "npm:fast-xml-parser@^5.7.1": "5.7.1",
     "npm:octokit@^5.0.5": "5.0.5"
@@ -324,7 +323,6 @@
     "dependencies": [
       "jsr:@b-fuze/deno-dom@~0.1.56",
       "jsr:@std/assert@1",
-      "npm:@octokit/graphql@^9.0.3",
       "npm:fast-xml-builder@^1.1.5",
       "npm:fast-xml-parser@^5.7.1",
       "npm:octokit@^5.0.5"

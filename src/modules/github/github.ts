@@ -1,22 +1,39 @@
 import { Octokit } from "octokit";
 import { DOMParser } from "@b-fuze/deno-dom";
-import { github as envs } from "./.envs.ts";
+import { GithubEnvsData } from "./_types.ts";
 import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
 import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { fetchOptions } from "./fetchOptions.ts";
+import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
 
 class Repos {
-  octokit = new Octokit({ auth: envs.AUTH_KEY });
+  envs: GithubEnvsData;
+  octokit: Octokit;
+  rssBuilder: RSSBuilder;
 
-  rssBuilder = new RSSBuilder(
-    "Github Repos",
-    `A list of ${envs.USER}'s github repos`,
-    `https://github.com/${envs.USER}?tab=repositories`,
-  );
+  constructor() {
+    const [user, auth] = EnvVarManager.validate([
+      "GITHUB_USER",
+      "GITHUB_AUTH_KEY"
+    ]);
+
+    this.envs = {
+      user,
+      auth
+    }
+
+    this.octokit = new Octokit({ auth: this.envs.auth });
+
+    this.rssBuilder = new RSSBuilder(
+      "Github Repos",
+      `A list of ${this.envs.user}'s github repos`,
+      `https://github.com/${this.envs.user}?tab=repositories`,
+    );
+  }
 
   // TODO: Probably a good idea to cache the uris to avoid downloading the dom every time
   async parseDomForOpengraph(repoName:string) {
-    const res = await fetch(`https://github.com/${envs.USER}/${repoName}/`, fetchOptions);
+    const res = await fetch(`https://github.com/${this.envs.user}/${repoName}/`, fetchOptions);
 
     const dom = await res.text();
 
@@ -51,7 +68,7 @@ class Repos {
 
   async fetchRepos() {
     return await this.octokit.request("GET /users/{username}/repos", {
-      username: envs.USER,
+      username: this.envs.user,
       headers: {
         "X-GitHub-Api-Version": "2026-03-10",
       },
