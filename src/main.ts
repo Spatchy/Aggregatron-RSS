@@ -69,7 +69,7 @@ if (import.meta.main) {
   const rssYoutube = await youtubeFeed.RSS();
   
   const combiner = new RSSCombine();
-  const rss = combiner.combine([rssGithub, rssYoutube], undefined, new Date("2026-01-01"));
+  const rss = combiner.combine([rssGithub, rssYoutube]);
 
   console.log(rss);
 }
