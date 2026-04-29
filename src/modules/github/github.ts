@@ -46,7 +46,7 @@ class Repos {
       const imageUri = tag.getAttribute("content");
       return imageUri!;
     } else {
-      throw new Error("The preview image was not found");
+      throw new Error(`The preview image was not found for ${repoName}`);
     }
   }
 
