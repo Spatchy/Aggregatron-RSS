@@ -1,75 +1,66 @@
-import { X2jOptions, XMLParser } from "fast-xml-parser";
-import { RSSBuilder } from "./RSSBuilder/rssBuilder.ts";
-import { FeedObject, ItemObject } from "./RSSBuilder/_types.ts";
+import { GeneralEnvsData } from "./_types.ts";
+import { EnvVarManager } from "./EnvVarManager/envVarManager.ts";
 import { Repos } from "./modules/github/github.ts";
 import { YoutubeFeed } from "./modules/youtube/youtube.ts";
+import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
-class RSSCombine {
-  options: X2jOptions = {
-    ignoreAttributes: false,
-    attributeNamePrefix: "$",
-    parseAttributeValue: true,
-  };
+class Main {
+  envs: GeneralEnvsData;
+  repos = new Repos();
+  youtubeFeed = new YoutubeFeed();
+  combiner = new RSSCombine();
 
-  parser = new XMLParser(this.options);
+  constructor() {
+    const [refreshInterval] = EnvVarManager.validate([
+      "REFRESH_INTERVAL_MINS",
+    ]);
 
-  // Todo: figure out where to pull these from?
-  builder = new RSSBuilder(
-    "Aggregatron RSS meta feed",
-    "Aggregatron RSS meta feed",
-    "example.com",
-  );
+    this.envs = {
+      refreshInterval,
+    };
+  }
 
-  combine(feeds: string[], max?:number, newerThan?:Date) {
-    const feedObjects = feeds.map((feed) => {
-      return this.parser.parse(feed) as FeedObject;
-    });
+  async initFilesystem() {
+    const dirs = [
+      "data",
+    ];
 
-    const itemsArr: ItemObject[] = [];
-    feedObjects.forEach((feedObject) => {
-      feedObject.rss.item.forEach((i) => {
-        // Dates are actually still strings depite what types say, so we convert
-        i.pubDate = new Date(i.pubDate);
-        itemsArr.push(i);
-      });
-    });
-
-    itemsArr.sort((a, b) => {
-      return b.pubDate.getTime() - a.pubDate.getTime();
-    });
-
-    let arrayToUse = itemsArr;
-
-    if (newerThan) {
-      const excludeIndex = itemsArr.findIndex((i) => {
-        return i.pubDate.getTime() <= newerThan.getTime();
-      });
-
-      if (excludeIndex > -1) {
-        arrayToUse = arrayToUse.slice(0, excludeIndex);
+    for (const dir of dirs) {
+      try {
+        const _stats = await Deno.lstat(dir);
+      } catch (err) {
+        if (err instanceof Deno.errors.NotFound) {
+          console.log(`WARN: ${dir} folder does not exist, creating...`);
+          await Deno.mkdir(dir);
+        } else {
+          throw err;
+        }
       }
     }
+  }
 
-    if (max && arrayToUse.length > max) {
-      arrayToUse = arrayToUse.slice(0, max);
-    }
+  async run() {
+    const rssGithub = await this.repos.RSS();
+    const rssYoutube = await this.youtubeFeed.RSS();
 
-    arrayToUse.forEach((i) => {
-      this.builder.addItem(i);
-    });
+    const rss = this.combiner.combine([rssGithub, rssYoutube]);
 
-    return this.builder.build();
+    await this.initFilesystem();
+
+    await Deno.writeTextFile("data/feed.xml", rss);
+  }
+
+  runWithTimer() {
+    console.log(`running at ${new Date().getTime()}`)
+    this.run();
+
+    setTimeout(() => {
+      this.runWithTimer();
+    }, Number(this.envs.refreshInterval)*60*1000);
   }
 }
 
 if (import.meta.main) {
-  const repos = new Repos();
-  const youtubeFeed = new YoutubeFeed();
-  const rssGithub = await repos.RSS();
-  const rssYoutube = await youtubeFeed.RSS();
-  
-  const combiner = new RSSCombine();
-  const rss = combiner.combine([rssGithub, rssYoutube]);
-
-  console.log(rss);
+  const main = new Main();
+  main.runWithTimer();
 }
