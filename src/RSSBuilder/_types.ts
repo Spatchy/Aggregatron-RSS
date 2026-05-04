@@ -14,10 +14,12 @@ interface ItemObject {
 interface FeedObject {
   rss: {
     $version: "0.91" | "1.0" | "2.0"
-    title: string,
-    description: string,
-    link: string
-    item: ItemObject[]
+    channel: {
+      title: string,
+      description: string,
+      link: string
+      item: ItemObject[]
+    }
   }
 }
 

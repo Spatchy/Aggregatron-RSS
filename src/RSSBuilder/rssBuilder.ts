@@ -14,16 +14,18 @@ class RSSBuilder {
     this.feed = {
       rss: {
         $version: "2.0",
-        title: channelTitle,
-        description: channelDescription,
-        link: channelLink,
-        item: []
+        channel: {
+          title: channelTitle,
+          description: channelDescription,
+          link: channelLink,
+          item: []
+        }
       }
     }
   }
 
   addItem(item:ItemObject){
-    this.feed.rss.item.push(item);
+    this.feed.rss.channel.item.push(item);
   }
 
   build() {

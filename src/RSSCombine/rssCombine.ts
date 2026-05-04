@@ -25,7 +25,7 @@ class RSSCombine {
 
     const itemsArr: ItemObject[] = [];
     feedObjects.forEach((feedObject) => {
-      feedObject.rss.item.forEach((i) => {
+      feedObject.rss.channel.item.forEach((i) => {
         // Dates are actually still strings depite what types say, so we convert
         i.pubDate = new Date(i.pubDate);
         itemsArr.push(i);
