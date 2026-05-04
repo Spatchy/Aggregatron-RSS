@@ -34,7 +34,7 @@ class YoutubeFeed {
     });
 
     return {
-      $url: uri,
+      $url: uri.replace("hqdefault", "maxresdefault"), // only maxresdefault is always 16:9
       $length: Number(res.headers.get("Content-Length")),
       $type: res.headers.get("Content-Type")!
     }
