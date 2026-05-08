@@ -39,7 +39,7 @@ class Main {
     }
   }
 
-  async run() {
+  async run(startedTime: Date) {
     const rssGithub = await this.repos.RSS();
     const rssYoutube = await this.youtubeFeed.RSS();
 
@@ -47,12 +47,17 @@ class Main {
 
     await this.initFilesystem();
 
+    
     await Deno.writeTextFile("data/feed.xml", rss);
+
+    const deltaTime = Date.now() - startedTime.getTime();
+    console.log(`New RSS written to disk after ${deltaTime / 1000} seconds`);
   }
 
   runWithTimer() {
-    console.log(`running at ${new Date().getTime()}`)
-    this.run();
+    const started = new Date(Date.now());
+    console.log(`Running at ${started.toISOString()}`)
+    this.run(started);
 
     setTimeout(() => {
       this.runWithTimer();
