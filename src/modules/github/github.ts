@@ -7,20 +7,24 @@ import { fetchOptions } from "./fetchOptions.ts";
 import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
 
 class Repos {
-  envs: GithubEnvsData;
+  envs = {} as GithubEnvsData;
   octokit: Octokit;
   rssBuilder: RSSBuilder;
 
   constructor() {
-    const [user, auth] = EnvVarManager.validate([
+    [
+      this.envs.user,
+      this.envs.auth,
+      this.envs.filterForks,
+      this.envs.filterPrivate,
+      this.envs.filterArchived
+    ] = EnvVarManager.validate([
       "GITHUB_USER",
-      "GITHUB_AUTH_KEY"
+      "GITHUB_AUTH_KEY",
+      "GITHUB_FILTER_OUT_FORKS",
+      "GITHUB_FILTER_OUT_PRIVATE",
+      "GITHUB_FILTER_OUT_ARCHIVED"
     ]);
-
-    this.envs = {
-      user,
-      auth
-    }
 
     this.octokit = new Octokit({ auth: this.envs.auth });
 
@@ -67,19 +71,40 @@ class Repos {
   }
 
   async fetchRepos() {
-    return await this.octokit.request("GET /users/{username}/repos", {
+    const res = await this.octokit.request("GET /users/{username}/repos", {
       username: this.envs.user,
       headers: {
         "X-GitHub-Api-Version": "2026-03-10",
       },
     });
+
+    return res;
+  }
+
+  filterRepos(octokitResponse:Awaited<ReturnType<typeof this.fetchRepos>>) {
+    let result = octokitResponse.data;
+
+    // TODO: find a way to validate this in the envVarManager
+    if (this.envs.filterForks.toLowerCase() === "true") {
+      result = result.filter((repo) => !repo.fork);
+    }
+
+    // TODO: find a way to compile multiple filters into one to prevent several iterations
+    if (this.envs.filterPrivate.toLowerCase() === "true") {
+      result = result.filter((repo) => !repo.private);
+    }
+
+    if (this.envs.filterArchived.toLowerCase() === "true") {
+      result = result.filter((repo) => !repo.archived);
+    }
+
+    return result;
   }
 
   async RSS() {
-    const reposData = await this.fetchRepos();
+    const reposData = this.filterRepos(await this.fetchRepos());
 
-    // TODO: probably should make this async
-    await Promise.all(reposData.data.map(async (repo) => {
+    await Promise.all(reposData.map(async (repo) => {
       this.rssBuilder.addItem({
         title: repo.name,
         pubDate: new Date(repo.created_at ?? ""),
