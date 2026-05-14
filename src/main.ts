@@ -1,7 +1,7 @@
 import { GeneralEnvsData } from "./_types.ts";
 import { EnvVarManager } from "./EnvVarManager/envVarManager.ts";
 import { Repos } from "./modules/github/github.ts";
-import { YoutubeFeed } from "./modules/youtube/youtube.ts";
+import { YoutubeFeed } from "./modules/youtubeRSS/youtubeRSS.ts";
 import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
 class Main {
