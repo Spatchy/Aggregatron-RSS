@@ -6,6 +6,14 @@ interface TModule {
   new (): Module;
 }
 
+class NoModulesEnabledError extends Error {
+  constructor() {
+    super("No modules were enabled! Enable at least one module via environment variables for this program to work");
+    this.name = "NoModulesEnabledError";
+    Object.setPrototypeOf(this, NoModulesEnabledError.prototype);
+  }
+}
+
 class ModuleBootstrapper {
   moduleClasses: TModule[] = [
     YoutubeRSS,
@@ -22,6 +30,10 @@ class ModuleBootstrapper {
         this.enabledModules.push(new moduleClass());
       }
     });
+
+    if (this.enabledModules.length === 0) {
+      throw new NoModulesEnabledError();
+    }
   }
 }
 
