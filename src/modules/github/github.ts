@@ -5,14 +5,15 @@ import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { fetchOptions } from "./fetchOptions.ts";
 import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
 import { EnvVarsData } from "../../EnvVarManager/_types.ts";
+import { Module } from "../Module.ts";
 
-class Repos {
-  envs: EnvVarsData["modules"]["githubRepos"];
+class GithubRepos implements Module{
+  envs: EnvVarsData["modules"]["GithubRepos"];
   octokit: Octokit;
   rssBuilder: RSSBuilder;
 
   constructor() {
-    this.envs = EnvVarManager.vars.modules.githubRepos
+    this.envs = EnvVarManager.vars.modules.GithubRepos
 
     this.octokit = new Octokit({ auth: this.envs.auth });
 
@@ -110,4 +111,4 @@ class Repos {
   }
 }
 
-export { Repos };
+export { GithubRepos };

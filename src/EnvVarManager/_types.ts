@@ -3,7 +3,7 @@ interface EnvVarsData {
     refreshInterval: number;
   };
   modules: {
-    githubRepos: {
+    GithubRepos: {
       enable: boolean;
       user: string;
       auth: string;
@@ -38,7 +38,7 @@ interface EnvVarsNames {
     refreshInterval: EnvVarNameMap;
   };
   modules: {
-    githubRepos: {
+    GithubRepos: {
       enable: EnvVarNameMap;
       user: EnvVarNameMap;
       auth: EnvVarNameMap;

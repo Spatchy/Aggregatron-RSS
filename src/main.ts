@@ -1,18 +1,15 @@
 import { EnvVarsData } from "./EnvVarManager/_types.ts";
 import { EnvVarManager } from "./EnvVarManager/envVarManager.ts";
-import { Repos } from "./modules/github/github.ts";
-import { YoutubeFeed } from "./modules/youtubeRSS/youtubeRSS.ts";
+import { ModuleBootstrapper } from "./ModuleBootstrapper/ModuleBootstrapper.ts";
 import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
 class Main {
   envs: EnvVarsData;
-  repos = new Repos();
-  youtubeFeed = new YoutubeFeed();
   combiner = new RSSCombine();
 
   constructor() {
-    EnvVarManager.validate()
-    this.envs = EnvVarManager.vars
+    EnvVarManager.validate();
+    this.envs = EnvVarManager.vars;
   }
 
   async initFilesystem() {
@@ -35,14 +32,25 @@ class Main {
   }
 
   async run(startedTime: Date) {
-    const rssGithub = await this.repos.RSS();
-    const rssYoutube = await this.youtubeFeed.RSS();
+    const enabledModuleNames = Object.keys(this.envs.modules).map(
+      (moduleName) => {
+        const key = moduleName as keyof typeof this.envs.modules;
+        if (this.envs.modules[key].enable) {
+          return moduleName;
+        }
+      },
+    ).filter((x) => x !== undefined);
 
-    const rss = this.combiner.combine([rssGithub, rssYoutube]);
+    const bootstrapper = new ModuleBootstrapper(enabledModuleNames);
+
+    const rssStrings = await Promise.all(
+      bootstrapper.enabledModules.map(async (module) => await module.RSS()),
+    );
+
+    const rss = this.combiner.combine(rssStrings);
 
     await this.initFilesystem();
 
-    
     await Deno.writeTextFile("data/feed.xml", rss);
 
     const deltaTime = Date.now() - startedTime.getTime();
@@ -51,12 +59,12 @@ class Main {
 
   runWithTimer() {
     const started = new Date(Date.now());
-    console.log(`Running at ${started.toISOString()}`)
+    console.log(`Running at ${started.toISOString()}`);
     this.run(started);
 
     setTimeout(() => {
       this.runWithTimer();
-    }, Number(this.envs.general.refreshInterval)*60*1000);
+    }, Number(this.envs.general.refreshInterval) * 60 * 1000);
   }
 }
 

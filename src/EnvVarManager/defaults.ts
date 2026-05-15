@@ -5,7 +5,7 @@ const envVarsDefaults: EnvVarsData = {
     refreshInterval: 120
   },
   modules: {
-    githubRepos: {
+    GithubRepos: {
       enable: false,
       user: "",
       auth: "",

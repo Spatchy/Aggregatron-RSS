@@ -4,8 +4,9 @@ import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
 import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
 import { EnvVarsData } from "../../EnvVarManager/_types.ts";
+import { Module } from "../Module.ts"
 
-class YoutubeFeed {
+class YoutubeRSS implements Module {
   envs: EnvVarsData["modules"]["YoutubeRSS"];
   options: X2jOptions = {
     ignoreAttributes: false,
@@ -77,4 +78,4 @@ class YoutubeFeed {
   }
 }
 
-export { YoutubeFeed };
+export { YoutubeRSS };

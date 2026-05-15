@@ -9,7 +9,7 @@ const envVarsNames: EnvVarsNames = {
     },
   },
   modules: {
-    githubRepos: {
+    GithubRepos: {
       enable: {
         name: "GITHUB_REPOS_ENABLE",
         optional: true,
