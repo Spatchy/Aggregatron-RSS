@@ -76,14 +76,14 @@ class EnvVarManager {
     varValue: string,
     isInArray: boolean = false,
   ): boolean {
-    const truthyValues = ["true", "1", "t"];
-    const falsyValues = ["false", "0", "f"];
+    const truthyValues = ["true", "1", "t", "y"];
+    const falsyValues = ["false", "0", "f", "n"];
 
     const validationType: ValidationType = isInArray ? "array<boolean>" : "boolean"
 
-    if (varValue.toLocaleLowerCase() in truthyValues) {
+    if (truthyValues.includes(varValue.toLowerCase())) {
       return true;
-    } else if (varValue.toLocaleLowerCase() in falsyValues) {
+    } else if (falsyValues.includes(varValue.toLowerCase())) {
       return false;
     } else {
       throw new EnvVarValidationError(varName, validationType, varValue, isInArray);
@@ -101,9 +101,9 @@ class EnvVarManager {
       case "array<string>":
         return valuesArray;
       case "array<boolean>":
-        return valuesArray.map((val) => this.validateBoolean(varName, val));
+        return valuesArray.map((val) => this.validateBoolean(varName, val, true));
       case "array<number>":
-        return valuesArray.map((val) => this.validateNumber(varName, val));
+        return valuesArray.map((val) => this.validateNumber(varName, val, true));
       default:
         throw new Error("This error is intended to keep ts happy and should never be seen");
     }
@@ -118,11 +118,11 @@ class EnvVarManager {
 
       const varValue = Deno.env.get(varName);
 
-      if (!varValue && !optional) {
+      if (varValue === undefined && !optional) {
         throw new EnvVarNotSetError(varName);
       }
 
-      if (varValue) {
+      if (varValue !== undefined) {
         const castKey = generalKey as keyof typeof this.vars.general;
         this.vars.general[castKey] = this.validateType(
           varName,
@@ -144,13 +144,13 @@ class EnvVarManager {
   
         const varValue = Deno.env.get(varName);
   
-        if (!varValue && !optional) {
+        if (varValue === undefined && !optional) {
           throw new EnvVarNotSetError(varName);
         }
   
-        const castOptionKey = module as keyof typeof this.vars.modules[typeof module];
+        const castOptionKey = optionKey as keyof typeof this.vars.modules[typeof module];
 
-        if (varValue) {
+        if (varValue !== undefined) {
           this.vars.modules[module][castOptionKey] = this.validateType(
             varName,
             varValue,
