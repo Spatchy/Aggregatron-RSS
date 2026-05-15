@@ -1,23 +1,18 @@
-import { GeneralEnvsData } from "./_types.ts";
+import { EnvVarsData } from "./EnvVarManager/_types.ts";
 import { EnvVarManager } from "./EnvVarManager/envVarManager.ts";
 import { Repos } from "./modules/github/github.ts";
 import { YoutubeFeed } from "./modules/youtubeRSS/youtubeRSS.ts";
 import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
 class Main {
-  envs: GeneralEnvsData;
+  envs: EnvVarsData;
   repos = new Repos();
   youtubeFeed = new YoutubeFeed();
   combiner = new RSSCombine();
 
   constructor() {
-    const [refreshInterval] = EnvVarManager.validate([
-      "REFRESH_INTERVAL_MINS",
-    ]);
-
-    this.envs = {
-      refreshInterval,
-    };
+    EnvVarManager.validate()
+    this.envs = EnvVarManager.vars
   }
 
   async initFilesystem() {
@@ -61,7 +56,7 @@ class Main {
 
     setTimeout(() => {
       this.runWithTimer();
-    }, Number(this.envs.refreshInterval)*60*1000);
+    }, Number(this.envs.general.refreshInterval)*60*1000);
   }
 }
 

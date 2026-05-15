@@ -1,11 +1,12 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
-import { FeedEntry, YouTubeEnvsData, YouTubeFeed } from "./_types.ts";
+import { FeedEntry, YouTubeFeed } from "./_types.ts";
 import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
 import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
+import { EnvVarsData } from "../../EnvVarManager/_types.ts";
 
 class YoutubeFeed {
-  envs: YouTubeEnvsData;
+  envs: EnvVarsData["modules"]["YoutubeRSS"];
   options: X2jOptions = {
     ignoreAttributes: false,
     attributeNamePrefix: "$",
@@ -15,13 +16,7 @@ class YoutubeFeed {
   parser = new XMLParser(this.options);
 
   constructor() {
-    const [channelId] = EnvVarManager.validate([
-      "YOUTUBE_CHANNEL_PERM_ID"
-    ]);
-
-    this.envs = {
-      channelId
-    }
+    this.envs = EnvVarManager.vars.modules.YoutubeRSS
   }
 
   descTrim(description: string) {

@@ -71,8 +71,4 @@ interface YouTubeFeed {
   feed: Feed;
 }
 
-interface YouTubeEnvsData {
-  channelId: string;
-}
-
-export type { YouTubeFeed, FeedEntry, YouTubeEnvsData }
+export type { YouTubeFeed, FeedEntry }

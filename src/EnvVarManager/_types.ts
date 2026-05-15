@@ -1,0 +1,57 @@
+interface EnvVarsData {
+  general: {
+    refreshInterval: number;
+  };
+  modules: {
+    githubRepos: {
+      enable: boolean;
+      user: string;
+      auth: string;
+      filterForks: boolean;
+      filterPrivate: boolean;
+      filterArchived: boolean;
+      filterByName: Array<string>;
+    };
+    YoutubeRSS: {
+      enable: boolean;
+      channelId: string;
+    };
+  };
+}
+
+type ValidationType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "array<string>"
+  | "array<number>"
+  | "array<boolean>";
+
+interface EnvVarNameMap {
+  name: string;
+  optional: boolean;
+  validationType: ValidationType;
+}
+
+interface EnvVarsNames {
+  general: {
+    refreshInterval: EnvVarNameMap;
+  };
+  modules: {
+    githubRepos: {
+      enable: EnvVarNameMap;
+      user: EnvVarNameMap;
+      auth: EnvVarNameMap;
+      filterForks: EnvVarNameMap;
+      filterPrivate: EnvVarNameMap;
+      filterArchived: EnvVarNameMap;
+      filterByName: EnvVarNameMap;
+    };
+    YoutubeRSS: {
+      enable: EnvVarNameMap;
+      channelId: EnvVarNameMap;
+    };
+  };
+}
+
+export type { EnvVarsData, EnvVarsNames, ValidationType };

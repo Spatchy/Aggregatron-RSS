@@ -1,30 +1,18 @@
 import { Octokit } from "octokit";
 import { DOMParser } from "@b-fuze/deno-dom";
-import { GithubEnvsData } from "./_types.ts";
 import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
 import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { fetchOptions } from "./fetchOptions.ts";
 import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
+import { EnvVarsData } from "../../EnvVarManager/_types.ts";
 
 class Repos {
-  envs = {} as GithubEnvsData;
+  envs: EnvVarsData["modules"]["githubRepos"];
   octokit: Octokit;
   rssBuilder: RSSBuilder;
 
   constructor() {
-    [
-      this.envs.user,
-      this.envs.auth,
-      this.envs.filterForks,
-      this.envs.filterPrivate,
-      this.envs.filterArchived
-    ] = EnvVarManager.validate([
-      "GITHUB_USER",
-      "GITHUB_AUTH_KEY",
-      "GITHUB_FILTER_OUT_FORKS",
-      "GITHUB_FILTER_OUT_PRIVATE",
-      "GITHUB_FILTER_OUT_ARCHIVED"
-    ]);
+    this.envs = EnvVarManager.vars.modules.githubRepos
 
     this.octokit = new Octokit({ auth: this.envs.auth });
 
@@ -84,18 +72,21 @@ class Repos {
   filterRepos(octokitResponse:Awaited<ReturnType<typeof this.fetchRepos>>) {
     let result = octokitResponse.data;
 
-    // TODO: find a way to validate this in the envVarManager
-    if (this.envs.filterForks.toLowerCase() === "true") {
+    if (this.envs.filterForks) {
       result = result.filter((repo) => !repo.fork);
     }
 
     // TODO: find a way to compile multiple filters into one to prevent several iterations
-    if (this.envs.filterPrivate.toLowerCase() === "true") {
+    if (this.envs.filterPrivate) {
       result = result.filter((repo) => !repo.private);
     }
 
-    if (this.envs.filterArchived.toLowerCase() === "true") {
+    if (this.envs.filterArchived) {
       result = result.filter((repo) => !repo.archived);
+    }
+
+    if (this.envs.filterByName.length > 0) {
+      result = result.filter((repo) => !(repo.name in this.envs.filterByName))
     }
 
     return result;
