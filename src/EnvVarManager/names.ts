@@ -58,6 +58,18 @@ const envVarsNames: EnvVarsNames = {
         validationType: "string",
       },
     },
+    Printables: {
+      enable: {
+        name: "PRINTABLES_ENABLE",
+        optional: true,
+        validationType: "boolean",
+      },
+      userHandle: {
+        name: "PRINTABLES_USER_HANDLE",
+        optional: false,
+        validationType: "string",
+      },
+    },
   },
 };
 

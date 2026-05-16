@@ -16,6 +16,10 @@ interface EnvVarsData {
       enable: boolean;
       channelId: string;
     };
+    Printables: {
+      enable: boolean;
+      userHandle: string;
+    }
   };
 }
 
@@ -51,6 +55,10 @@ interface EnvVarsNames {
       enable: EnvVarNameMap;
       channelId: EnvVarNameMap;
     };
+    Printables: {
+      enable: EnvVarNameMap;
+      userHandle: EnvVarNameMap;
+    }
   };
 }
 

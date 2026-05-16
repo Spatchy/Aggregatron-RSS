@@ -18,6 +18,10 @@ const envVarsDefaults: EnvVarsData = {
       enable: false,
       channelId: "",
     },
+    Printables: {
+      enable: false,
+      userHandle: "",
+    }
   },
 };
 
