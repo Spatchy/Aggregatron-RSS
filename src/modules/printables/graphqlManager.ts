@@ -2,6 +2,7 @@ import {
   GraphQlPostBody,
   ListUserModelsResponse,
   SearchUsersResponse,
+  StlsDetails,
 } from "./_types.ts";
 
 class GraphQLManager {
@@ -57,7 +58,7 @@ class GraphQLManager {
     return json;
   }
 
-  static async fetchModelDetails(printId: string) {
+  static async fetchModelDetails(printId: string): Promise<StlsDetails> {
     const body = {
       operationName: "ModelFiles",
       query:

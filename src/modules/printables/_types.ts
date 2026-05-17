@@ -36,4 +36,31 @@ interface ListUserModelsResponse {
   };
 }
 
-export type { GraphQlPostBody, SearchUsersResponse, ListUserModelsResponse, ListUserModelsResponseItems };
+interface StlsDetailsItems {
+  id: string;
+  created: string; // ISO 8601 date string
+  name: string;
+  folder: string;
+  note: string;
+  fileSize: number;
+  filePreviewPath: string;
+  order: number;
+  __typename: string;
+}
+
+interface StlsDetails {
+  data: {
+    model: {
+      id: string;
+      stls: StlsDetailsItems[];
+    };
+  };
+}
+
+export type {
+  GraphQlPostBody,
+  ListUserModelsResponse,
+  ListUserModelsResponseItems,
+  SearchUsersResponse,
+  StlsDetails,
+};
