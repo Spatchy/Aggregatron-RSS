@@ -75,6 +75,22 @@ class Printables implements Module {
     return modelDetailsJson.data.model;
   }
 
+  checkFilterEligible(details: ModelDetail["data"]["model"]): boolean {
+    if (this.envs.minRating > (parseFloat(details.ratingAvg) || 0)) {
+      return false;
+    }
+
+    if (this.envs.skipReuploads && details.authorship === "reupload") {
+      return false;
+    }
+
+    if (this.envs.skipNsfw && details.nsfw) {
+      return false;
+    }
+
+    return true;
+  }
+
   async generateThumbnailEnclosure(
     imageUriFragment: string,
   ): Promise<ItemObject["enclosure"]> {
@@ -98,16 +114,20 @@ class Printables implements Module {
     await Promise.all(modelsData.map(async (model) => {
       const details = await this.getModelDetails(model);
 
-      this.rssBuilder.addItem({
-        title: model.name,
-        pubDate: new Date(model.firstPublish),
-        description: details.summary,
-        link: `https://printables.com/model/${model.id}-${model.slug}`,
-        category: "printables/models",
-        enclosure: await this.generateThumbnailEnclosure(
-          details.previewFile.filePreviewPath,
-        ),
-      });
+      const thumbnailUri = this.envs.useThumbnailImage
+        ? details.image.filePath
+        : details.previewFile.filePreviewPath;
+
+      if (this.checkFilterEligible(details)) {
+        this.rssBuilder.addItem({
+          title: model.name,
+          pubDate: new Date(model.firstPublish),
+          description: details.summary,
+          link: `https://printables.com/model/${model.id}-${model.slug}`,
+          category: "printables/models",
+          enclosure: await this.generateThumbnailEnclosure(thumbnailUri),
+        });
+      }
     }));
 
     return this.rssBuilder.build();

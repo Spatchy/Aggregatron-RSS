@@ -21,6 +21,10 @@ const envVarsDefaults: EnvVarsData = {
     Printables: {
       enable: false,
       userHandle: "",
+      skipReuploads: false,
+      skipNsfw: false,
+      useThumbnailImage: false,
+      minRating: 0
     }
   },
 };

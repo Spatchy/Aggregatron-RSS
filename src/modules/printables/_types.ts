@@ -65,6 +65,7 @@ interface ModelDetail {
       aiGenerated: boolean;
       politicalContent: boolean;
       summary: string;
+      image: ModelImage;
       images: ModelImage[];
       previewFile: ModelPreviewFile;
       __typename: "PrintType";
