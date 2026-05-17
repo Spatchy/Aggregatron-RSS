@@ -2,7 +2,7 @@ import {
   GraphQlPostBody,
   ListUserModelsResponse,
   SearchUsersResponse,
-  StlsDetails,
+  ModelDetail,
 } from "./_types.ts";
 
 class GraphQLManager {
@@ -58,11 +58,11 @@ class GraphQLManager {
     return json;
   }
 
-  static async fetchModelDetails(printId: string): Promise<StlsDetails> {
+  static async fetchModelDetails(printId: string): Promise<ModelDetail> {
     const body = {
-      operationName: "ModelFiles",
+      operationName: "ModelDetail",
       query:
-        "query ModelFiles($id: ID!) {\n  model: print(id: $id) {\n    id\n    stls {\n      ...StlDetail\n      __typename\n    }\n  }\n}\nfragment StlDetail on STLType {\n  id\n  created\n  name\n  folder\n  note\n  fileSize\n  filePreviewPath\n  order\n  __typename\n}",
+        "query ModelDetail($id: ID!) {\n  model: print(id: $id) {\n    ...ModelDetailEditable\n    __typename\n  }\n}\nfragment ModelDetailEditable on PrintType {\n  id\n  slug\n  name\n  authorship\n  ratingAvg\n  ratingCount\n  description\n  modified\n  firstPublish\n  datePublished\n  nsfw\n  aiGenerated\n  politicalContent\n  summary\n  images {\n    ...SimpleImage\n    __typename\n  }\n  previewFile {\n    ...PreviewFile\n    __typename\n  }\n  __typename\n}\nfragment PreviewFile on PreviewFileUnionType {\n  ... on STLType {\n    id\n    filePreviewPath\n    __typename\n  }\n  ... on SLAType {\n    id\n    filePreviewPath\n    __typename\n  }\n  ... on GCodeType {\n    id\n    filePreviewPath\n    __typename\n  }\n  __typename\n}\nfragment SimpleImage on PrintImageType {\n  id\n  filePath\n  __typename\n}",
       variables: {
         id: printId,
       },

@@ -3,7 +3,7 @@ import { EnvVarManager } from "../../EnvVarManager/envVarManager.ts";
 import { ItemObject } from "../../RSSBuilder/_types.ts";
 import { RSSBuilder } from "../../RSSBuilder/rssBuilder.ts";
 import { Module } from "../Module.ts";
-import { ListUserModelsResponseItems } from "./_types.ts";
+import { ListUserModelsResponseItems, ModelDetail } from "./_types.ts";
 import { GraphQLManager } from "./graphqlManager.ts";
 
 class UserNotFoundError extends Error {
@@ -68,25 +68,17 @@ class Printables implements Module {
     return allModelsData;
   }
 
-  async getModelPreviewUrl(
+  async getModelDetails(
     model: ListUserModelsResponseItems,
-  ): Promise<string> {
+  ): Promise<ModelDetail["data"]["model"]> {
     const modelDetailsJson = await GraphQLManager.fetchModelDetails(model.id);
-
-    const imageUriFragment =
-      modelDetailsJson.data.model.stls.toSorted((a, b) => {
-        return new Date(b.created).getTime() - new Date(a.created).getTime();
-      })[0].filePreviewPath;
-
-    const fullUrl = `https://media.printables.com/${imageUriFragment}`;
-
-    return fullUrl;
+    return modelDetailsJson.data.model;
   }
 
   async generateThumbnailEnclosure(
-    model: ListUserModelsResponseItems,
+    imageUriFragment: string,
   ): Promise<ItemObject["enclosure"]> {
-    const uri = await this.getModelPreviewUrl(model);
+    const uri = `https://media.printables.com/${imageUriFragment}`;
 
     const res = await fetch(uri, {
       method: "HEAD",
@@ -104,13 +96,17 @@ class Printables implements Module {
     const modelsData = await this.listAllUserModels(userId);
 
     await Promise.all(modelsData.map(async (model) => {
+      const details = await this.getModelDetails(model);
+
       this.rssBuilder.addItem({
         title: model.name,
         pubDate: new Date(model.firstPublish),
-        description: "View this 3D model on Printables", // TODO: figure out how to fetch the short description
+        description: details.summary,
         link: `https://printables.com/model/${model.id}-${model.slug}`,
         category: "printables/models",
-        enclosure: await this.generateThumbnailEnclosure(model),
+        enclosure: await this.generateThumbnailEnclosure(
+          details.previewFile.filePreviewPath,
+        ),
       });
     }));
 

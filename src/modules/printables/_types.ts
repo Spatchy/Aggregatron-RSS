@@ -36,23 +36,38 @@ interface ListUserModelsResponse {
   };
 }
 
-interface StlsDetailsItems {
+interface ModelImage {
   id: string;
-  created: string; // ISO 8601 date string
-  name: string;
-  folder: string;
-  note: string;
-  fileSize: number;
-  filePreviewPath: string;
-  order: number;
-  __typename: string;
+  filePath: string;
+  __typename: "PrintImageType";
 }
 
-interface StlsDetails {
+interface ModelPreviewFile {
+  id: string;
+  filePreviewPath: string;
+  __typename: "STLType" | "SLAType" | "GCodeType";
+}
+
+interface ModelDetail {
   data: {
     model: {
       id: string;
-      stls: StlsDetailsItems[];
+      slug: string;
+      name: string;
+      authorship: "author" | "reupload"; // can this be anything else?
+      ratingAvg: string; // A 0.0-5.0 float returned as a string for some reason
+      ratingCount: number;
+      description: string; // HTML elements included in this string
+      modified: string; // ISO 8601 date string
+      firstPublish: string; // ISO 8601 date string
+      datePublished: string; // ISO 8601 date string
+      nsfw: boolean;
+      aiGenerated: boolean;
+      politicalContent: boolean;
+      summary: string;
+      images: ModelImage[];
+      previewFile: ModelPreviewFile;
+      __typename: "PrintType";
     };
   };
 }
@@ -62,5 +77,5 @@ export type {
   ListUserModelsResponse,
   ListUserModelsResponseItems,
   SearchUsersResponse,
-  StlsDetails,
+  ModelDetail,
 };
