@@ -18,6 +18,14 @@ const envVarsDefaults: EnvVarsData = {
       enable: false,
       channelId: "",
     },
+    Printables: {
+      enable: false,
+      userHandle: "",
+      skipReuploads: false,
+      skipNsfw: false,
+      useThumbnailImage: false,
+      minRating: 0
+    }
   },
 };
 

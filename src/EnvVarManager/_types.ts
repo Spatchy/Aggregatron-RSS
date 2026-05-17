@@ -16,6 +16,14 @@ interface EnvVarsData {
       enable: boolean;
       channelId: string;
     };
+    Printables: {
+      enable: boolean;
+      userHandle: string;
+      skipReuploads: boolean;
+      skipNsfw: boolean;
+      useThumbnailImage: boolean;
+      minRating: number;
+    }
   };
 }
 
@@ -51,6 +59,14 @@ interface EnvVarsNames {
       enable: EnvVarNameMap;
       channelId: EnvVarNameMap;
     };
+    Printables: {
+      enable: EnvVarNameMap;
+      userHandle: EnvVarNameMap;
+      skipReuploads: EnvVarNameMap;
+      skipNsfw: EnvVarNameMap;
+      useThumbnailImage: EnvVarNameMap;
+      minRating: EnvVarNameMap;
+    }
   };
 }
 

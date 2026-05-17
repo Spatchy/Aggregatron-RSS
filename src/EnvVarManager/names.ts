@@ -58,6 +58,38 @@ const envVarsNames: EnvVarsNames = {
         validationType: "string",
       },
     },
+    Printables: {
+      enable: {
+        name: "PRINTABLES_ENABLE",
+        optional: true,
+        validationType: "boolean",
+      },
+      userHandle: {
+        name: "PRINTABLES_USER_HANDLE",
+        optional: false,
+        validationType: "string",
+      },
+      skipReuploads: {
+        name: "PRINTABLES_SKIP_REUPLOADS",
+        optional: true,
+        validationType: "boolean",
+      },
+      skipNsfw: {
+        name: "PRINTABLES_SKIP_NSFW",
+        optional: true,
+        validationType: "boolean",
+      },
+      useThumbnailImage: {
+        name: "PRINTABLES_USE_SITE_LISTING_THUMBNAIL",
+        optional: true,
+        validationType: "boolean",
+      },
+      minRating: {
+        name: "PRINTABLES_MINIMUM_RATING",
+        optional: true,
+        validationType: "number",
+      }
+    },
   },
 };
 
