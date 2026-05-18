@@ -46,7 +46,7 @@ const envVarsNames = {
         validationType: "boolean",
       },
       filterPrivate: {
-        name: "GITHUB_REPOS_FILTER_OUT_FORKS",
+        name: "GITHUB_REPOS_FILTER_OUT_PRIVATE",
         optional: true,
         validationType: "boolean",
       },
