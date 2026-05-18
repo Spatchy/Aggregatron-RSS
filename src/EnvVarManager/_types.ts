@@ -1,6 +1,9 @@
 interface EnvVarsData {
   general: {
     refreshInterval: number;
+    feedUrl: string;
+    feedTitle: string;
+    feedDescription: string;
   };
   modules: {
     GithubRepos: {
@@ -35,39 +38,28 @@ type ValidationType =
   | "array<number>"
   | "array<boolean>";
 
-interface EnvVarNameMap {
+interface EnvVarNameMap<T extends ValidationType> {
   name: string;
   optional: boolean;
-  validationType: ValidationType;
+  validationType: T;
 }
 
-interface EnvVarsNames {
-  general: {
-    refreshInterval: EnvVarNameMap;
-  };
-  modules: {
-    GithubRepos: {
-      enable: EnvVarNameMap;
-      user: EnvVarNameMap;
-      auth: EnvVarNameMap;
-      filterForks: EnvVarNameMap;
-      filterPrivate: EnvVarNameMap;
-      filterArchived: EnvVarNameMap;
-      filterByName: EnvVarNameMap;
-    };
-    YoutubeRSS: {
-      enable: EnvVarNameMap;
-      channelId: EnvVarNameMap;
-    };
-    Printables: {
-      enable: EnvVarNameMap;
-      userHandle: EnvVarNameMap;
-      skipReuploads: EnvVarNameMap;
-      skipNsfw: EnvVarNameMap;
-      useThumbnailImage: EnvVarNameMap;
-      minRating: EnvVarNameMap;
-    }
-  };
-}
+type ToValidationType<T> =
+  T extends string ? "string" :
+  T extends number ? "number" :
+  T extends boolean ? "boolean" :
+  T extends Array<string> ? "array<string>" :
+  T extends Array<number> ? "array<number>" :
+  T extends Array<boolean> ? "array<boolean>" :
+  never;
 
-export type { EnvVarsData, EnvVarsNames, ValidationType };
+type ToEnvVarNamesShape<T> = {
+  // deno-lint-ignore no-explicit-any
+  [K in keyof T]: T[K] extends Array<any>
+    ? EnvVarNameMap<ToValidationType<T[K]>>
+    : T[K] extends object
+    ? ToEnvVarNamesShape<T[K]>
+    : EnvVarNameMap<ToValidationType<T[K]>>;
+};
+
+export type { EnvVarsData, ToEnvVarNamesShape, ValidationType };

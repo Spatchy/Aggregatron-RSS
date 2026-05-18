@@ -2,7 +2,10 @@ import { EnvVarsData } from "./_types.ts";
 
 const envVarsDefaults: EnvVarsData = {
   general: {
-    refreshInterval: 120
+    refreshInterval: 120,
+    feedUrl: "example.com",
+    feedTitle: "Aggregatron meta RSS feed",
+    feedDescription: "Aggregatron meta RSS feed"
   },
   modules: {
     GithubRepos: {
@@ -24,8 +27,8 @@ const envVarsDefaults: EnvVarsData = {
       skipReuploads: false,
       skipNsfw: false,
       useThumbnailImage: false,
-      minRating: 0
-    }
+      minRating: 0,
+    },
   },
 };
 

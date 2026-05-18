@@ -50,11 +50,15 @@ class EnvVarManager {
       case "array<string>":
       case "array<boolean>":
       case "array<number>":
-        return this.validateArrays(varName, varValue, validationType)
+        return this.validateArrays(varName, varValue, validationType);
     }
   }
 
-  static validateNumber(varName: string, varValue: string, isInArray: boolean = false): number {
+  static validateNumber(
+    varName: string,
+    varValue: string,
+    isInArray: boolean = false,
+  ): number {
     let value = 0;
     if (varValue.includes(".")) {
       value = parseFloat(varValue);
@@ -62,10 +66,17 @@ class EnvVarManager {
       value = parseInt(varValue);
     }
 
-    const validationType: ValidationType = isInArray ? "array<number>" : "number"
+    const validationType: ValidationType = isInArray
+      ? "array<number>"
+      : "number";
 
     if (value < 0 || Number.isNaN(value)) {
-      throw new EnvVarValidationError(varName, validationType, varValue,  isInArray);
+      throw new EnvVarValidationError(
+        varName,
+        validationType,
+        varValue,
+        isInArray,
+      );
     }
 
     return value;
@@ -79,21 +90,28 @@ class EnvVarManager {
     const truthyValues = ["true", "1", "t", "y"];
     const falsyValues = ["false", "0", "f", "n"];
 
-    const validationType: ValidationType = isInArray ? "array<boolean>" : "boolean"
+    const validationType: ValidationType = isInArray
+      ? "array<boolean>"
+      : "boolean";
 
     if (truthyValues.includes(varValue.toLowerCase())) {
       return true;
     } else if (falsyValues.includes(varValue.toLowerCase())) {
       return false;
     } else {
-      throw new EnvVarValidationError(varName, validationType, varValue, isInArray);
+      throw new EnvVarValidationError(
+        varName,
+        validationType,
+        varValue,
+        isInArray,
+      );
     }
   }
 
   static validateArrays(
     varName: string,
     varValue: string,
-    validationType: Omit<ValidationType, "string" | "number" | "boolean">,
+    validationType: "array<string>" | "array<boolean>" | "array<number>",
   ) {
     const valuesArray = varValue.split(",");
 
@@ -101,12 +119,22 @@ class EnvVarManager {
       case "array<string>":
         return valuesArray;
       case "array<boolean>":
-        return valuesArray.map((val) => this.validateBoolean(varName, val, true));
+        return valuesArray.map((val) =>
+          this.validateBoolean(varName, val, true)
+        );
       case "array<number>":
-        return valuesArray.map((val) => this.validateNumber(varName, val, true));
-      default:
-        throw new Error("This error is intended to keep ts happy and should never be seen");
+        return valuesArray.map((val) =>
+          this.validateNumber(varName, val, true)
+        );
     }
+  }
+
+  // Need this function to stop ts being weird when setting the value normally
+  static setGeneralVar<K extends keyof typeof this.vars.general>(
+    key: K,
+    value: typeof this.vars.general[K],
+  ) {
+    this.vars.general[key] = value;
   }
 
   static validateGeneral() {
@@ -124,11 +152,14 @@ class EnvVarManager {
 
       if (varValue !== undefined) {
         const castKey = generalKey as keyof typeof this.vars.general;
-        this.vars.general[castKey] = this.validateType(
-          varName,
-          varValue,
-          validationType,
-        ) as typeof this.vars.general[typeof castKey];
+        this.setGeneralVar(
+          castKey,
+          this.validateType(
+            varName,
+            varValue,
+            validationType,
+          ) as typeof this.vars.general[typeof castKey],
+        );
       }
     }
   }
@@ -140,15 +171,17 @@ class EnvVarManager {
       for (optionKey in envVarsNames.modules[module]) {
         const varName = envVarsNames.modules[module][optionKey].name;
         const optional = envVarsNames.modules[module][optionKey].optional;
-        const validationType = envVarsNames.modules[module][optionKey].validationType;
-  
+        const validationType =
+          envVarsNames.modules[module][optionKey].validationType;
+
         const varValue = Deno.env.get(varName);
-  
+
         if (varValue === undefined && !optional) {
           throw new EnvVarNotSetError(varName);
         }
-  
-        const castOptionKey = optionKey as keyof typeof this.vars.modules[typeof module];
+
+        const castOptionKey =
+          optionKey as keyof typeof this.vars.modules[typeof module];
 
         if (varValue !== undefined) {
           this.vars.modules[module][castOptionKey] = this.validateType(
@@ -158,7 +191,10 @@ class EnvVarManager {
           ) as typeof this.vars.modules[typeof module][typeof castOptionKey];
         }
 
-        if (optionKey === "enable" && this.vars.modules[module][castOptionKey] === false) {
+        if (
+          optionKey === "enable" &&
+          this.vars.modules[module][castOptionKey] === false
+        ) {
           break; // skip the rest of the environment variables if the module is not enabled
         }
       }

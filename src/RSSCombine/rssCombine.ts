@@ -1,6 +1,7 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import { FeedObject, ItemObject } from "../RSSBuilder/_types.ts";
 import { RSSBuilder } from "../RSSBuilder/rssBuilder.ts";
+import { EnvVarManager } from "../EnvVarManager/envVarManager.ts";
 
 class RSSCombine {
   options: X2jOptions = {
@@ -9,13 +10,14 @@ class RSSCombine {
     parseAttributeValue: true,
   };
 
+  envs = EnvVarManager.vars.general
+
   parser = new XMLParser(this.options);
 
-  // Todo: figure out where to pull these from?
   builder = new RSSBuilder(
-    "Aggregatron RSS meta feed",
-    "Aggregatron RSS meta feed",
-    "example.com",
+    this.envs.feedTitle,
+    this.envs.feedDescription,
+    this.envs.feedUrl,
   );
 
   combine(feeds: string[], max?:number, newerThan?:Date) {

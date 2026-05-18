@@ -1,11 +1,26 @@
-import { EnvVarsNames } from "./_types.ts";
+import { EnvVarsData, ToEnvVarNamesShape } from "./_types.ts";
 
-const envVarsNames: EnvVarsNames = {
+const envVarsNames = {
   general: {
     refreshInterval: {
       name: "REFRESH_INTERVAL_MINUTES",
       optional: false,
       validationType: "number",
+    },
+    feedUrl: {
+      name: "FEED_URL",
+      optional: false,
+      validationType: "string",
+    },
+    feedTitle: {
+      name: "FEED_TITLE",
+      optional: true,
+      validationType: "string",
+    },
+    feedDescription: {
+      name: "FEED_DESCRIPTION",
+      optional: true,
+      validationType: "string",
     },
   },
   modules: {
@@ -91,6 +106,6 @@ const envVarsNames: EnvVarsNames = {
       }
     },
   },
-};
+} satisfies ToEnvVarNamesShape<EnvVarsData>;
 
 export { envVarsNames };

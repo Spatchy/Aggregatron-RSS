@@ -5,11 +5,13 @@ import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
 class Main {
   envs: EnvVarsData;
-  combiner = new RSSCombine();
+  combiner: RSSCombine;
 
   constructor() {
-    EnvVarManager.validate();
+    EnvVarManager.validate(); // this must ALWAYS be the first thing that happens!
+
     this.envs = EnvVarManager.vars;
+    this.combiner = new RSSCombine();
   }
 
   async initFilesystem() {
