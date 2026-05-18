@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="4675"
+   height="1044"
+   viewBox="0 0 4675 1044"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(122.4031,-46.196228)">
+    <rect
+       style="fill:#53bfa4;fill-opacity:1;stroke:#000000;stroke-width:0"
+       id="rect1"
+       width="1024"
+       height="1024"
+       x="-1146.4031"
+       y="56.196228"
+       rx="100"
+       ry="100" />
+    <rect
+       style="fill:#53bfa4;fill-opacity:1;stroke:#ffffff;stroke-width:20;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6"
+       width="4655"
+       height="1024"
+       x="-112.4031"
+       y="56.196228"
+       rx="100"
+       ry="100" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0"
+       id="circle6"
+       cx="399.59689"
+       cy="568.19623"
+       r="54.088871" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:60;stroke-dasharray:none;stroke-opacity:1"
+       id="circle7"
+       r="318.89548"
+       cy="568.19623"
+       cx="399.59689" />
+    <path
+       id="rect7"
+       style="fill:none;stroke:#ffffff;stroke-width:60"
+       d="m 722.59086,676.67574 c 0,0 -163.36224,-36.87021 -220.50302,-15.52115 -57.14078,21.34906 -102.49094,102.49094 -102.49094,102.49094 0,0 -45.35017,-81.14188 -102.49095,-102.49094 -57.14078,-21.34906 -220.503017,15.52115 -220.503017,15.52115 0,0 147.002027,-147.00202 220.503027,-220.50303 C 331.26961,422.00907 399.5969,353.68178 399.5969,353.68178 l 102.49093,102.49093 z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:533.333px;font-family:Lexend;-inkscape-font-specification:'Lexend Bold';writing-mode:lr-tb;direction:ltr;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+       x="927.56256"
+       y="729.52979"
+       id="text7"><tspan
+         id="tspan7"
+         x="927.56256"
+         y="729.52979"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:533.333px;font-family:Lexend;-inkscape-font-specification:'Lexend Bold';fill:#ffffff;fill-opacity:1">Aggregatron </tspan></text>
+  </g>
+</svg>
