@@ -3,15 +3,25 @@ import { EnvVarManager } from "./EnvVarManager/envVarManager.ts";
 import { ModuleBootstrapper } from "./ModuleBootstrapper/ModuleBootstrapper.ts";
 import { RSSCombine } from "./RSSCombine/rssCombine.ts";
 
+class TooManyConsecutiveErrorsError extends Error {
+  constructor() {
+    super("Errors occured on 3 consecutive attempts and need to be resolved before the program can continue");
+    this.name = "TooManyConsecutiveErrorsError";
+    Object.setPrototypeOf(this, TooManyConsecutiveErrorsError.prototype);
+  }
+}
+
 class Main {
   envs: EnvVarsData;
   combiner: RSSCombine;
+  runningErrors: Error[];
 
   constructor() {
     EnvVarManager.validate(); // this must ALWAYS be the first thing that happens!
 
     this.envs = EnvVarManager.vars;
     this.combiner = new RSSCombine();
+    this.runningErrors = [];
   }
 
   async initFilesystem() {
@@ -45,18 +55,37 @@ class Main {
 
     const bootstrapper = new ModuleBootstrapper(enabledModuleNames);
 
-    const rssStrings = await Promise.all(
-      bootstrapper.enabledModules.map(async (module) => await module.RSS()),
-    );
+    try {
+      const rssStrings = await Promise.all(
+        bootstrapper.enabledModules.map(async (module) => await module.RSS()),
+      );
 
-    const rss = this.combiner.combine(rssStrings);
+      const rss = this.combiner.combine(rssStrings);
 
-    await this.initFilesystem();
+      await this.initFilesystem();
 
-    await Deno.writeTextFile("data/feed.xml", rss);
+      await Deno.writeTextFile("data/feed.xml", rss);
 
-    const deltaTime = Date.now() - startedTime.getTime();
-    console.log(`New RSS written to disk after ${deltaTime / 1000} seconds`);
+      const deltaTime = Date.now() - startedTime.getTime();
+      console.log(`New RSS written to disk after ${deltaTime / 1000} seconds`);
+
+      this.runningErrors = [];
+    } catch (e) {
+      if (e instanceof Error) {
+        this.runningErrors.push(e);
+
+        console.error(
+          `The program encountered an error in one or more modules (see below).
+          Aborting this attempt and waiting ${this.envs.general.refreshInterval} minutes`,
+        );
+
+        console.error(e.name, e.message);
+
+        if (this.runningErrors.length >= 3) {
+          throw new TooManyConsecutiveErrorsError()
+        }
+      }
+    }
   }
 
   runWithTimer() {
