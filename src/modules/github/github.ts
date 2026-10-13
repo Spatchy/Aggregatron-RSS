@@ -24,29 +24,15 @@ class GithubRepos implements Module{
     );
   }
 
-  // TODO: Probably a good idea to cache the uris to avoid downloading the dom every time
-  async parseDomForOpengraph(repoName:string) {
-    const res = await fetch(`https://github.com/${this.envs.user}/${repoName}/`, fetchOptions);
-
-    const dom = await res.text();
-
-    const domParser = new DOMParser()
-    const doc = domParser.parseFromString(dom, "text/html");
-
-    const tag = doc.querySelector('meta[property="og:image"]');
-
-    if (tag) {
-      const imageUri = tag.getAttribute("content");
-      return imageUri!;
-    } else {
-      throw new Error(`The preview image was not found for ${repoName}`);
-    }
+  returnOpengraphProxyUrl(repoName: string) {
+    // Github tends to rate limit requests from the client, but this html.zone proxy thing might not
+    return `https://github.html.zone/${this.envs.user}/${repoName}/`
   }
 
   async generateThumbnailEnclosure(
     repoName: string,
   ): Promise<ItemObject["enclosure"]> {
-    const uri = await this.parseDomForOpengraph(repoName);
+    const uri = this.returnOpengraphProxyUrl(repoName);
 
     const res = await fetch(uri, {
       method: "HEAD",
